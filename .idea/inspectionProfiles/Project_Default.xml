@@ -1,0 +1,31 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="GoCommentLeadingSpace" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoCommentStart" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoErrorStringFormat" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoExportedElementShouldHaveComment" enabled="false" level="INFORMATION" enabled_by_default="false" />
+    <inspection_tool class="GoExportedFuncWithUnexportedType" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoExportedOwnDeclaration" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoSnakeCaseUsage" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoStructInitializationWithoutFieldNames" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnhandledErrorResult" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnitSpecificDurationSuffix" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnsortedImport" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnusedCallResult" enabled="true" level="WARNING" enabled_by_default="true">
+      <functions>
+        <function importPath="errors" name="New" />
+        <function importPath="fmt" name="Sprint" />
+        <function importPath="fmt" name="Errorf" />
+        <function importPath="sort" name="Reverse" />
+      </functions>
+    </inspection_tool>
+    <inspection_tool class="GoUnusedConst" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnusedExportedFunction" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnusedExportedType" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnusedFunction" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnusedGlobalVariable" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnusedParameter" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoUnusedType" enabled="false" level="WARNING" enabled_by_default="false" />
+  </profile>
+</component>
