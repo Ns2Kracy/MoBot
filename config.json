@@ -1,0 +1,14 @@
+{
+  "app_name": "KNBot",
+  "port": "5700",
+  "static_path": "",
+  "mysql": {
+    "drive": "mysql",
+    "host": "139.224.19.236",
+    "port": "3306",
+    "user": "root",
+    "pwd": "nk20021001",
+    "database": "knBot"
+  },
+  "mode": "debug"
+}
