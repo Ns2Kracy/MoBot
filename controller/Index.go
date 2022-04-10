@@ -1,11 +1,12 @@
 package controller
 
 import (
+	"KNBot/datasource"
 	"KNBot/service"
-	"xorm.io/xorm"
 )
 
 var (
-	db           *xorm.Engine
+	db           = datasource.NewEngine()
 	OauthService = service.NewOauthService(db)
+	UserService  = service.NewUserService(db)
 )

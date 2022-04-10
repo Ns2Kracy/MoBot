@@ -9,3 +9,9 @@ func NewOauthService(db *xorm.Engine) OauthService {
 		db: db,
 	}
 }
+
+func NewUserService(db *xorm.Engine) UserService {
+	return UserService{
+		db: db,
+	}
+}
