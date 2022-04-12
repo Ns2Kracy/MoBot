@@ -9,9 +9,10 @@ func InitRoute(app *iris.Application) {
 
 	app.Party("/")
 	{
-		Oauth := app.Party("/oauth")
+		Osu := app.Party("/")
 		{
-			Oauth.Get("/bind", controller.BindUser)
+			Osu.Post("/", controller.BindUrl)
+			Osu.Get("/oauth2", controller.Oauth)
 		}
 	}
 }

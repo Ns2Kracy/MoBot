@@ -26,7 +26,6 @@ func NewEngine() *xorm.Engine {
 	}
 	err = engine.Sync2(
 		new(model.User),
-		new(model.Oauth),
 	)
 	err = engine.Ping()
 	if err != nil {

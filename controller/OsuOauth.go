@@ -2,96 +2,116 @@ package controller
 
 import (
 	"KNBot/model"
+	"encoding/json"
+	"fmt"
 	"github.com/kataras/iris/v12"
-	"io/ioutil"
 	"net/http"
-	"net/url"
-	"strconv"
 )
 
-/**
- * 另外封装有关授权的比如
- * 拼接，因为需要操作到数据库，可能导致import循环
- * 所以先都放在这里
- * 春晚看看
- */
+const (
+	redirect_uri  = "http://localhost:5700/oauth2"
+	client_id     = "13964"
+	client_secret = "QaMAxvh5APsw4HvEEziGRi0Ah8S06pM8wdztvS5B"
+)
 
-/**
- * 拼接授权链接
- * state qq
- * 此为现在osu设置的回调链接 http://localhost:5700/
- */
-
+//授权链接
 func AssembleAuthorizationUrl(state string) string {
+	state = "2220496937"
 	URL := "https://osu.ppy.sh/oauth/authorize" +
 		"?state=" + state +
-		"&redirect_uri=" + "http://localhost:5700/" +
+		"&redirect_uri=" + redirect_uri +
 		"&scope=" + "friends.read identify public" +
 		"&response_type=" + "code" +
-		"&client_id=" + strconv.FormatInt(OauthService.GetClientId(), 10)
+		"&client_id=" + client_id
 	return URL
 }
 
-/**
- * 初次获取访问令牌,并返回json
- */
-func GetAccessToken(User model.User) string {
-	OsuUrl := "https://osu.ppy.sh/oauth/token"
-	var body url.Values
-	body.Add("client_id", strconv.FormatInt(OauthService.GetClientId(), 10))
-	body.Add("client_secret", OauthService.GetClientSecret())
-	body.Add("code", UserService.GetRefreshToken())
-	body.Add("grant_type", "authorization_code")
-	body.Add("redirect_uri", OauthService.GetRedirectUri())
-
-	response, _ := http.PostForm(OsuUrl, body)
-	response.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	//获取返回的json
-	bodyByte, _ := ioutil.ReadAll(response.Body)
-
-	User.AccessToken = response.Header.Get("access_token")
-	User.RefreshToken = response.Header.Get("refresh_token")
-	User.ExpireTime, _ = strconv.ParseInt(response.Header.Get("expires_in"), 10, 64)
-
-	UserService.SaveOauthUser(User)
-
-	return string(bodyByte)
+//
+//获取token的链接
+func GetTokenUrl(code string) string {
+	iris.New().Logger().Info("/token")
+	URL := "https://osu.ppy.sh/oauth/token" +
+		"?grant_type=" + "authorization_code" +
+		"&code=" + code +
+		"&redirect_uri=" + redirect_uri +
+		"&client_id=" + client_id +
+		"&client_secret=" + "QaMAxvh5APsw4HvEEziGRi0Ah8S06pM8wdztvS5B"
+	return URL
 }
 
-/**
- * 后续刷新访问令牌
- */
+func GetAccessToken(url string) (string, int64) {
 
-func RefreshToken(User model.User) {
-	OsuUrl := "https://osu.ppy.sh/oauth/token"
-	client := &http.Client{}
-	var body url.Values
-	body.Add("client_id", strconv.FormatInt(OauthService.GetClientId(), 10))
-	body.Add("client_secret", OauthService.GetClientSecret())
-	body.Add("code", UserService.GetRefreshToken())
-	body.Add("grant_type", "refresh_token")
-	body.Add("redirect_uri", OauthService.GetRedirectUri())
+	// 形成请求
 
-	response, _ := client.PostForm(OsuUrl, body)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return "", 0
+	}
+	req.Header.Set("accept", "application/json")
 
-	defer response.Body.Close()
+	// 发送请求并获得响应
+	var httpClient = http.Client{}
+	var res *http.Response
+	res, err = httpClient.Do(req)
+	if err != nil {
+		return "", 0
+	}
 
-	User.AccessToken = response.Header.Get("access_token")
-	User.RefreshToken = response.Header.Get("refresh_token")
-	User.ExpireTime, _ = strconv.ParseInt(response.Header.Get("expires_in"), 10, 64)
-
-	UserService.UpdateOauthUser(User.OsuID)
-
+	// 将响应体解析为 token，并返回
+	var UsrToken model.Token
+	if err = json.NewDecoder(res.Body).Decode(&UsrToken); err != nil {
+		return "", 0
+	}
+	return UsrToken.AccessToken, int64(UsrToken.ExpiresIn)
 }
 
-func BindUser(ctx iris.Context) {
-	//返回拼装url
+func getRefreshToken(url string) (string, string, int64) {
+	// 形成请求
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return "", "", 0
+	}
+	req.Header.Set("accept", "application/json")
+
+	// 发送请求并获得响应
+	var httpClient = http.Client{}
+	var res *http.Response
+	res, err = httpClient.Do(req)
+	if err != nil {
+		return "", "", 0
+	}
+
+	// 将响应体解析为 token，并返回
+	var UsrToken model.Token
+	if err = json.NewDecoder(res.Body).Decode(&UsrToken); err != nil {
+		return "", "", 0
+	}
+	return UsrToken.AccessToken, UsrToken.RefreshToken, int64(UsrToken.ExpiresIn)
+}
+
+func BindUrl(ctx iris.Context) {
+
+	//这里的state先就用state来测试一下，后面再改成用户的qq号
+	Url := AssembleAuthorizationUrl("state")
+	fmt.Println(Url)
+	ctx.Redirect(Url, iris.StatusTemporaryRedirect)
+}
+
+//测试认证
+func Oauth(ctx iris.Context) {
+	// 获取 code
+	var code = ctx.URLParam("code")
+	fmt.Println("截取到的code:", code)
+
+	// 通过 code, 获取 token
+	var tokenAuthUrl = GetTokenUrl(code)
+	fmt.Println("tokenAuthUrl:", tokenAuthUrl)
+
 	var User model.User
-	Url := AssembleAuthorizationUrl("osu")
-	ctx.Redirect(Url)
-	//获取
-	at := GetAccessToken(User)
-	iris.New().Logger().Info(at)
+	User.AccessToken, User.RefreshToken, User.ExpireTime = getRefreshToken(tokenAuthUrl)
 
-	ctx.WriteString("成功绑定用户")
+	fmt.Println("获取的AccessToken:", User.AccessToken)
+	fmt.Println("获取的RefreshToken:", User.RefreshToken)
+	fmt.Println("获取的ExpireTime:", User.ExpireTime)
 }
