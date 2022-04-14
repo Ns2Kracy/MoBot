@@ -11,7 +11,7 @@ func InitRoute(app *iris.Application) {
 	{
 		Osu := app.Party("/")
 		{
-			Osu.Post("/", controller.BindUrl)
+			Osu.Get("/", controller.BindUrl)
 			Osu.Get("/oauth2", controller.Oauth)
 		}
 	}
