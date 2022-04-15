@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"KNBot/datasource"
 	"KNBot/model"
 	"encoding/json"
 	"fmt"
@@ -15,11 +14,9 @@ import (
 
 const (
 	redirect_uri  = "http://localhost:5700/oauth2"
-	client_id     = "13964"
-	client_secret = "QaMAxvh5APsw4HvEEziGRi0Ah8S06pM8wdztvS5B"
+	client_id     = "14131"
+	client_secret = "HjMD0JFmHjeWdxspdF6f6H34RllMoikUZQgZn7Em"
 )
-
-var DB = datasource.NewEngine()
 
 //授权链接
 func AssembleAuthorizationUrl(state string) string {
@@ -33,20 +30,17 @@ func AssembleAuthorizationUrl(state string) string {
 	return URL
 }
 func GetToken(ctx iris.Context, code, state string) model.Token {
-	//获取code
-
-	fmt.Println("截取到的code:", code)
+	oauthUrl := "https://osu.ppy.sh/oauth/token/"
 	body := make(url.Values)
 	body.Add("grant_type", "authorization_code")
 	body.Add("code", code)
 	body.Add("redirect_uri", redirect_uri)
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
-	oauthUrl := "https://osu.ppy.sh/oauth/token/"
-	fmt.Println(oauthUrl + body.Encode())
-	client := &http.Client{}
+
+	client := http.Client{}
 	request, _ := http.NewRequest(http.MethodPost, oauthUrl, strings.NewReader(body.Encode()))
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json")
 
 	req, _ := client.Do(request)
@@ -56,7 +50,6 @@ func GetToken(ctx iris.Context, code, state string) model.Token {
 	//将响应json绑定到结构体
 	var token model.Token
 	dataByte, _ := ioutil.ReadAll(req.Body)
-	fmt.Println("body:", string(dataByte))
 	err := json.Unmarshal(dataByte, &token)
 	if err != nil {
 		fmt.Println("解析失败")
@@ -88,15 +81,10 @@ func RefreshToken(ctx iris.Context, code, state string) model.Token {
 	//将响应json绑定到结构体
 	var token model.Token
 	dataByte, _ := ioutil.ReadAll(req.Body)
-	fmt.Println("body:", string(dataByte))
 	err := json.Unmarshal(dataByte, &token)
 	if err != nil {
 		fmt.Println("解析失败")
 	}
-	fmt.Println("原始json数据:", string(dataByte))
-
-	fmt.Println("获取到的Access_Token:", token.AccessToken)
-	fmt.Println("获取到的Refresh_Token", token.RefreshToken)
 
 	return token
 }
@@ -124,23 +112,8 @@ func GerBotAccessToken(ctx iris.Context, code, state string) {
 	ctx.WriteString(string(dataByte))
 }
 
-//获取access_token的链接
-func GetAccessTokenUrl(code string) string {
-	iris.New().Logger().Info("/token")
-	AccessTokenUrl := "https://osu.ppy.sh/oauth/token" +
-		"scope" + "public" +
-		"?grant_type=" + "client_credentials" +
-		"&code=" + code +
-		"&client_secret=" + "QaMAxvh5APsw4HvEEziGRi0Ah8S06pM8wdztvS5B"
-	return AccessTokenUrl
-}
-
 func BindUrl(ctx iris.Context) {
 	ctx.Redirect(AssembleAuthorizationUrl("2220496937"))
-}
-
-func SaveOauth(ctx iris.Context) {
-
 }
 
 func Oauth(ctx iris.Context) {
@@ -157,9 +130,10 @@ func Oauth(ctx iris.Context) {
 		RefreshToken: refresh_token,
 		ExpireTime:   int64(expires_in),
 	}
-	saveUser := UserService.SaveOauthUser(User)
-	if !saveUser {
-		fmt.Println("绑定出现错误了捏")
+
+	err := UserService.SaveOauthUser(User)
+	if err != nil {
+		fmt.Println("绑定出现错误")
 		return
 	}
 

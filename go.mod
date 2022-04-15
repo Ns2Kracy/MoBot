@@ -4,7 +4,6 @@ go 1.18
 
 require (
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/kataras/iris v0.0.2
 	github.com/kataras/iris/v12 v12.2.0-beta1
 	xorm.io/xorm v1.2.5
 )
@@ -20,7 +19,6 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/flosch/pongo2/v4 v4.0.2 // indirect
 	github.com/goccy/go-json v0.9.7-0.20220412154129-171d97575378 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
