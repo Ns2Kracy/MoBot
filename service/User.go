@@ -12,12 +12,8 @@ type UserService struct {
 
 //保存验证过的用户信息
 func (us *UserService) SaveOauthUser(User model.User) error {
-	_, err := us.db.Table("user").
-		Cols("access_token").
-		Cols("refresh_token").
-		Cols("qq").
-		Cols("expire_in").
-		Insert(&User)
+	//存取用户token
+	_, err := us.db.Insert(&User)
 	if err != nil {
 		iris.New().Logger().Info(err.Error())
 	}

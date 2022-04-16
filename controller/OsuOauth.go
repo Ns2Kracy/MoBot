@@ -30,13 +30,15 @@ func AssembleAuthorizationUrl(state string) string {
 	return URL
 }
 func GetToken(ctx iris.Context, code, state string) model.Token {
-	oauthUrl := "https://osu.ppy.sh/oauth/token/"
+	oauthUrl := "https://osu.ppy.sh/oauth/token"
 	body := make(url.Values)
 	body.Add("grant_type", "authorization_code")
 	body.Add("code", code)
 	body.Add("redirect_uri", redirect_uri)
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
+
+	fmt.Println("截取到的code:", code)
 
 	client := http.Client{}
 	request, _ := http.NewRequest(http.MethodPost, oauthUrl, strings.NewReader(body.Encode()))
@@ -46,7 +48,6 @@ func GetToken(ctx iris.Context, code, state string) model.Token {
 	req, _ := client.Do(request)
 
 	defer req.Body.Close()
-
 	//将响应json绑定到结构体
 	var token model.Token
 	dataByte, _ := ioutil.ReadAll(req.Body)
@@ -54,11 +55,8 @@ func GetToken(ctx iris.Context, code, state string) model.Token {
 	if err != nil {
 		fmt.Println("解析失败")
 	}
-	fmt.Println("原始json数据:", string(dataByte))
 
-	fmt.Println("获取到的Access_Token:", token.AccessToken)
-	fmt.Println("获取到的Refresh_Token", token.RefreshToken)
-
+	fmt.Println("原始数据:", string(dataByte))
 	return token
 }
 func RefreshToken(ctx iris.Context, code, state string) model.Token {
@@ -73,7 +71,7 @@ func RefreshToken(ctx iris.Context, code, state string) model.Token {
 	client := &http.Client{}
 	request, _ := http.NewRequest(http.MethodPost, oauthUrl, strings.NewReader(body.Encode()))
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Accept-Type", "application/json")
 	req, _ := client.Do(request)
 
 	defer req.Body.Close()
@@ -102,7 +100,7 @@ func GerBotAccessToken(ctx iris.Context, code, state string) {
 	client := &http.Client{}
 	request, _ := http.NewRequest(http.MethodPost, oauthUrl, strings.NewReader(body.Encode()))
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept-Type", "application/x-www-form-urlencoded")
+	request.Header.Set("Accept-Type", "application/json")
 
 	req, _ := client.Do(request)
 	defer req.Body.Close()
@@ -113,7 +111,7 @@ func GerBotAccessToken(ctx iris.Context, code, state string) {
 }
 
 func BindUrl(ctx iris.Context) {
-	ctx.Redirect(AssembleAuthorizationUrl("2220496937"))
+	ctx.Redirect(AssembleAuthorizationUrl("state"))
 }
 
 func Oauth(ctx iris.Context) {
@@ -123,6 +121,10 @@ func Oauth(ctx iris.Context) {
 	var token = GetToken(ctx, code, state)
 	access_token := token.AccessToken
 	refresh_token := token.RefreshToken
+
+	fmt.Println("获取到的Access_Token:", token.AccessToken)
+	fmt.Println("获取到的Refresh_Token", token.RefreshToken)
+
 	expires_in := token.ExpiresIn
 	User := model.User{
 		Qq:           qq,
