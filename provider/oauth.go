@@ -1,4 +1,4 @@
-package middleware
+package provider
 
 import (
 	"KNBot/model"
@@ -8,19 +8,27 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
-//Oauth2中间件
+/**
+ * 关于Oauth第三方授权认证的一些参数。
+ */
 const (
-	redirect_uri  = "http://localhost:5700/oauth2"
-	client_id     = "14131"
+	// 回调链接，后期更改
+	redirect_uri = "http://localhost:5700/oauth2"
+	// 申请的屙屎Oauth第三方应用程序给的id
+	client_id = "14131"
+	// 申请的屙屎Oauth第三方应用程序给的密钥
 	client_secret = "HjMD0JFmHjeWdxspdF6f6H34RllMoikUZQgZn7Em"
 )
 
-//授权链接
+/**
+ * 拼接授权链接 * 此处的state日后再做处理
+ * 会通过coolq来获取发送绑定命令者的一些参数
+ * 处理这些参数作为id
+ */
 func AssembleAuthorizationUrl(state string) string {
-	state = "2220496937"
+	state = "STATE"
 	URL := "https://osu.ppy.sh/oauth/authorize" +
 		"?state=" + state +
 		"&redirect_uri=" + redirect_uri +
@@ -29,6 +37,12 @@ func AssembleAuthorizationUrl(state string) string {
 		"&client_id=" + client_id
 	return URL
 }
+
+/**
+ * 初次获取到token
+ * 需要根据返回的code去交换token
+ * 初次根据token获取会同时返回access_token和refresh_token
+ */
 func GetToken(ctx iris.Context, code, state string) model.Token {
 	oauthUrl := "https://osu.ppy.sh/oauth/token"
 	body := make(url.Values)
@@ -40,17 +54,13 @@ func GetToken(ctx iris.Context, code, state string) model.Token {
 
 	fmt.Println("截取到的code:", code)
 
-	client := http.Client{}
-	request, _ := http.NewRequest(http.MethodPost, oauthUrl, strings.NewReader(body.Encode()))
+	request, _ := http.PostForm(oauthUrl, body)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json")
-
-	req, _ := client.Do(request)
-
-	defer req.Body.Close()
+	defer request.Body.Close()
 	//将响应json绑定到结构体
 	var token model.Token
-	dataByte, _ := ioutil.ReadAll(req.Body)
+	dataByte, _ := ioutil.ReadAll(request.Body)
 	err := json.Unmarshal(dataByte, &token)
 	if err != nil {
 		fmt.Println("解析失败")
@@ -59,8 +69,12 @@ func GetToken(ctx iris.Context, code, state string) model.Token {
 	fmt.Println("原始数据:", string(dataByte))
 	return token
 }
+
+/**
+ * 利用refresh_token刷新access_token
+ */
 func RefreshToken(ctx iris.Context, code, state string) model.Token {
-	oauthUrl := "https://osu.ppy.sh/oauth/token/"
+	oauthUrl := "https://osu.ppy.sh/oauth/token"
 	body := make(url.Values)
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
@@ -68,44 +82,48 @@ func RefreshToken(ctx iris.Context, code, state string) model.Token {
 	body.Add("grant_type", "refresh_token")
 	body.Add("redirect_uri", redirect_uri)
 
-	client := &http.Client{}
-	request, _ := http.NewRequest(http.MethodPost, oauthUrl, strings.NewReader(body.Encode()))
+	request, _ := http.PostForm(oauthUrl, body)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept-Type", "application/json")
-	req, _ := client.Do(request)
 
-	defer req.Body.Close()
-
+	defer request.Body.Close()
 	//将响应json绑定到结构体
 	var token model.Token
-	dataByte, _ := ioutil.ReadAll(req.Body)
+	dataByte, _ := ioutil.ReadAll(request.Body)
 	err := json.Unmarshal(dataByte, &token)
 	if err != nil {
 		fmt.Println("解析失败")
 	}
 
+	fmt.Println("原始数据:", string(dataByte))
 	return token
 }
-func GerBotAccessToken(ctx iris.Context, code, state string) {
+
+/**
+ * 机器人获取授权
+ */
+func GerBotAccessToken(ctx iris.Context, state string) model.Token {
 	//获取code
 	oauthUrl := "https://osu.ppy.sh/oauth/token"
 
 	body := make(url.Values)
 	body.Add("grant_type", "client_credentials")
-	body.Add("code", code)
 	body.Add("redirect_uri", redirect_uri)
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
 	body.Add("scope", "public")
-	client := &http.Client{}
-	request, _ := http.NewRequest(http.MethodPost, oauthUrl, strings.NewReader(body.Encode()))
+	request, _ := http.PostForm(oauthUrl, body)
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept-Type", "application/json")
+	defer request.Body.Close()
+	//将响应json绑定到结构体
+	var token model.Token
+	dataByte, _ := ioutil.ReadAll(request.Body)
+	err := json.Unmarshal(dataByte, &token)
+	if err != nil {
+		fmt.Println("解析失败")
+	}
 
-	req, _ := client.Do(request)
-	defer req.Body.Close()
-
-	dataByte, _ := ioutil.ReadAll(req.Body)
-
-	ctx.WriteString(string(dataByte))
+	fmt.Println("原始数据:", string(dataByte))
+	return token
 }

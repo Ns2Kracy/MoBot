@@ -2,7 +2,6 @@ package datasource
 
 import (
 	"KNBot/config"
-	"KNBot/model"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 
@@ -24,9 +23,6 @@ func NewEngine() *xorm.Engine {
 	if err != nil {
 		panic(err.Error())
 	}
-	err = engine.Sync2(
-		new(model.User),
-	)
 	err = engine.Ping()
 	if err != nil {
 		log.Fatalln(err)

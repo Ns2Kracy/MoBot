@@ -12,14 +12,14 @@ type User struct {
 	MainMode     int64
 	AccessToken  string
 	RefreshToken string
-	ExpireTime   int64
+	Expiresin    int64
 	JoinDate     time.Time
 }
 
 const (
 	// 游戏模式
-	STD = iota
-	TAIKO
-	CTB
-	MANIA
+	osu = iota
+	taiko
+	fruits
+	mania
 )

@@ -21,6 +21,10 @@ func (us *UserService) SaveOauthUser(User model.User) error {
 }
 
 //更新用户信息
-func (us *UserService) UpdateOauthUser(User model.User) bool {
-	return User.Id != 0
+func (us *UserService) UpdateOauthUser(User model.User) error {
+	_, err := us.db.Where(" access_token = ? AND refresh_token = ? AND expire_in = ? ").Update(&User)
+	if err != nil {
+		iris.New().Logger().Info(err.Error())
+	}
+	return nil
 }
