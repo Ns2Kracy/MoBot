@@ -9,6 +9,7 @@ func InitRoute(app *iris.Application) {
 
 	app.Party("/")
 	{
+		app.Get("/ws", controller.WsHandler)
 		app.Get("/", controller.BindUrl)
 		app.Get("/oauth2", controller.Oauth)
 		Osu := app.Party("/osu")
@@ -17,7 +18,6 @@ func InitRoute(app *iris.Application) {
 			Info := Osu.Party("/info")
 			{
 				Info.Get("/me", controller.InfoMe)
-				Info.Get("/other", controller.InfoOther)
 			}
 		}
 		Fun := app.Party("/fun")

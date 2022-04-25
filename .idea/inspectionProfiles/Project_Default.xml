@@ -7,6 +7,8 @@
     <inspection_tool class="GoExportedElementShouldHaveComment" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="GoExportedFuncWithUnexportedType" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="GoExportedOwnDeclaration" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoNameStartsWithPackageName" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="GoReceiverNames" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="GoSnakeCaseUsage" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="GoStructInitializationWithoutFieldNames" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="GoUnhandledErrorResult" enabled="false" level="WARNING" enabled_by_default="false" />

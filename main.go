@@ -9,5 +9,5 @@ func main() {
 	app := iris.New()
 	route.InitRoute(app)
 	app.Logger().SetLevel("debug")
-	app.Listen(":5700")
+	app.Run(iris.Addr(":5700"))
 }

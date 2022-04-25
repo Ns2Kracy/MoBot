@@ -1,6 +1,6 @@
 package config
 
 type KnBotConfig struct {
-	MySQLConfig
-	QqConfig
+	QqConfig QqConfig
+	Host     string
 }

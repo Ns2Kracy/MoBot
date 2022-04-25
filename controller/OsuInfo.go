@@ -2,7 +2,6 @@ package controller
 
 import (
 	"github.com/kataras/iris/v12"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -21,33 +20,30 @@ import (
  * 11、查询自己bp列表上某一个bp
  */
 
-func InfoMe(ctx iris.Context) {
-	osuUrl := "http://localhost:5700/users/Ns2Kracy/osu"
-
-	client := &http.Client{}
-	request, _ := http.NewRequest(http.MethodGet, osuUrl, nil)
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept", "application/json")
-
-	response, _ := client.Do(request)
-
-	defer response.Body.Close()
-
-	dataByte, _ := ioutil.ReadAll(response.Body)
-
-	ctx.WriteString(string(dataByte))
-}
-
-func InfoOther(ctx iris.Context) {
-
-}
-
-func RecentPlay(ctx iris.Context) {
-
-}
+var baseUrl = "http://localhost:5700"
 
 /**
- * 今天获取到的所有bp
- * bp几 + pp + mod
+ * 通过绑定来获取个人信息，刷新osu_name以及osu_id
  */
-func Todaybps(ctx iris.Context) {}
+func InfoMe(ctx iris.Context) {
+
+	// 先检查是否绑定
+	check := CheckToken(ctx)
+	if check {
+		osuUrl := baseUrl + "me" + "/" + "osu"
+
+		client := &http.Client{}
+		request, _ := http.NewRequest(http.MethodGet, osuUrl, nil)
+		request.Header.Set("Authorization", "Bearer"+OauthService.GetAccessToken(GetState()))
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Accept", "application/json")
+
+		response, _ := client.Do(request)
+
+		defer response.Body.Close()
+		return
+	} else {
+		ctx.Redirect("/")
+		return
+	}
+}

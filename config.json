@@ -1,7 +1,7 @@
 {
   "app_name": "KNBot",
-  "port": "5700",
-  "static_path": "",
+  "app_version": "1.0.0",
+  "static_path": "/static",
   "mysql": {
     "drive": "mysql",
     "host": "139.224.19.236",
