@@ -60,13 +60,6 @@ type wsConnection struct {
 }
 
 func WsHandler(ctx iris.Context) {
-	// 允许跨域请求
-	ctx.Header("Access-Control-Allow-Origin", "*")
-	ctx.Header("Access-Control-Allow-Headers", "*")
-	ctx.Header("Access-Control-Allow-Methods", "*")
-	ctx.Header("Access-Control-Allow-Credentials", "true")
-	// 允许跨域请求结束
-
 	ws, err := upgrader.Upgrade(ctx.ResponseWriter(), ctx.Request(), nil)
 	if err != nil {
 		ctx.StatusCode(iris.StatusInternalServerError)
@@ -87,7 +80,6 @@ func WsHandler(ctx iris.Context) {
 	WsConnAll[maxConnId] = wsConn
 	// 处理器
 	go wsConn.processLoop()
-
 	// 启动读协程
 	go wsConn.wsReadLoop()
 	// 启动写协程
