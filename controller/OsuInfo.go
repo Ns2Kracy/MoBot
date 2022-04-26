@@ -1,10 +1,5 @@
 package controller
 
-import (
-	"github.com/kataras/iris/v12"
-	"net/http"
-)
-
 /**
  * 功能臆想
  * 1、获取自己的Osu个人信息
@@ -21,29 +16,4 @@ import (
  */
 
 var baseUrl = "http://localhost:5700"
-
-/**
- * 通过绑定来获取个人信息，刷新osu_name以及osu_id
- */
-func InfoMe(ctx iris.Context) {
-
-	// 先检查是否绑定
-	check := CheckToken(ctx)
-	if check {
-		osuUrl := baseUrl + "me" + "/" + "osu"
-
-		client := &http.Client{}
-		request, _ := http.NewRequest(http.MethodGet, osuUrl, nil)
-		request.Header.Set("Authorization", "Bearer"+OauthService.GetAccessToken(GetState()))
-		request.Header.Set("Content-Type", "application/json")
-		request.Header.Set("Accept", "application/json")
-
-		response, _ := client.Do(request)
-
-		defer response.Body.Close()
-		return
-	} else {
-		ctx.Redirect("/")
-		return
-	}
-}
+var osuBaseUrl = "https://osu.ppy.sh/api/v2"

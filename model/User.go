@@ -23,3 +23,14 @@ const (
 	fruits
 	mania
 )
+
+const (
+	ez = iota
+	nf
+	ht
+	hr
+	dt
+	nc
+	hd
+	fl
+)

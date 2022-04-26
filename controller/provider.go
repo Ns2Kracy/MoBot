@@ -9,11 +9,11 @@ import "github.com/kataras/iris/v12"
 /**
  * 检查token是否存在
  */
-func CheckToken(ctx iris.Context) bool {
+func CheckToken() bool {
 	var state string
 	access_token := OauthService.GetAccessToken(state)
 	if access_token == "" {
-		ctx.WriteString("该账号尚未绑定，请点击下面的链接进行绑定↓↓↓\n")
+		iris.New().Logger().Println("该账号尚未绑定，请点击下面的链接进行绑定↓↓↓\n")
 		return false
 	}
 	return true

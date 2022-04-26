@@ -26,3 +26,7 @@ func (os *Oauth2Service) GetFreshToken(state string) string {
 	}
 	return User.AccessToken
 }
+
+func (os *Oauth2Service) GetExpiresIn(state string) int64 {
+	return 1
+}
