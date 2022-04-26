@@ -40,7 +40,7 @@ func HttpPost(url string, data interface{}) *http.Response {
 	return rsp
 }
 
-func httpPostForm(url string, body url.Values) *http.Response {
+func HttpPostForm(url string, body url.Values) *http.Response {
 	defer func() {
 		info := recover()
 		if info != nil {
@@ -58,7 +58,7 @@ func httpPostForm(url string, body url.Values) *http.Response {
 	return rsp
 }
 
-func GetRspBody(rsp *http.Response) string {
+func GetRspBody(rsp *http.Response) []byte {
 	body, _ := ioutil.ReadAll(rsp.Body)
-	return string(body)
+	return body
 }

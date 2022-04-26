@@ -2,11 +2,10 @@ package controller
 
 import (
 	"KNBot/model"
+	"KNBot/util"
 	"encoding/json"
 	"fmt"
 	"github.com/kataras/iris/v12"
-	"io/ioutil"
-	"net/http"
 	"net/url"
 )
 
@@ -55,21 +54,17 @@ func GetToken(ctx iris.Context, code, state string) model.Token {
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
 	// 发送请求
-	request, _ := http.PostForm(oauthUrl, body)
-	// 设定Header
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept", "application/json")
-	// 延迟关闭(十分重要)
-	defer request.Body.Close()
-	//将响应json绑定到结构体
+	rsp := util.HttpPostForm(oauthUrl, body)
+
 	var token model.Token
-	//读取响应
-	dataByte, _ := ioutil.ReadAll(request.Body)
+	// 读取响应
+	dataByte := util.GetRspBody(rsp)
 	// 将响应解析到token中
 	err := json.Unmarshal(dataByte, &token)
 	if err != nil {
 		fmt.Println("解析失败")
 	}
+
 	return token
 }
 
@@ -88,16 +83,11 @@ func RefreshToken(ctx iris.Context, state string) model.Token {
 	body.Add("grant_type", "refresh_token")
 	body.Add("redirect_uri", redirect_uri)
 	// 发送请求
-	request, _ := http.PostForm(oauthUrl, body)
-	// 设定Header
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept-Type", "application/json")
-	// 延迟关闭(十分重要)
-	defer request.Body.Close()
-	// 将响应json绑定到结构体
+	rsp := util.HttpPostForm(oauthUrl, body)
+
 	var token model.Token
 	// 读取响应
-	dataByte, _ := ioutil.ReadAll(request.Body)
+	dataByte := util.GetRspBody(rsp)
 	// 将响应解析到token中
 	err := json.Unmarshal(dataByte, &token)
 	if err != nil {
@@ -122,17 +112,12 @@ func GerBotAccessToken(ctx iris.Context, state string) model.Token {
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
 	body.Add("scope", "public")
-	// 发送请求
-	request, _ := http.PostForm(oauthUrl, body)
-	// 设定Header
-	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Accept-Type", "application/json")
-	// 延迟关闭(十分重要)
-	defer request.Body.Close()
-	//将响应json绑定到结构体
+
+	rsp := util.HttpPostForm(oauthUrl, body)
+
 	var token model.Token
 	// 读取响应
-	dataByte, _ := ioutil.ReadAll(request.Body)
+	dataByte := util.GetRspBody(rsp)
 	// 将响应解析到token中
 	err := json.Unmarshal(dataByte, &token)
 	if err != nil {
