@@ -42,7 +42,7 @@ func AssembleAuthorizationUrl(state string) string {
  * 需要根据返回的code去交换token
  * 初次根据token获取会同时返回access_token和refresh_token
  */
-func GetToken(ctx iris.Context, code, state string) model.Token {
+func GetToken(ctx iris.Context, code, state string) model.UserToken {
 	// 交换token的url
 	oauthUrl := "https://osu.ppy.sh/oauth/token"
 	// 定义一个请求体
@@ -56,7 +56,7 @@ func GetToken(ctx iris.Context, code, state string) model.Token {
 	// 发送请求
 	rsp := util.HttpPostForm(oauthUrl, body)
 
-	var token model.Token
+	var token model.UserToken
 	// 读取响应
 	dataByte := util.GetRspBody(rsp)
 	// 将响应解析到token中
@@ -71,7 +71,7 @@ func GetToken(ctx iris.Context, code, state string) model.Token {
 /**
  * 利用refresh_token刷新access_token
  */
-func RefreshToken(ctx iris.Context, state string) model.Token {
+func RefreshToken(ctx iris.Context, state string) model.UserToken {
 	// 交换token的url
 	oauthUrl := "https://osu.ppy.sh/oauth/token"
 	// 定义一个请求体
@@ -85,7 +85,7 @@ func RefreshToken(ctx iris.Context, state string) model.Token {
 	// 发送请求
 	rsp := util.HttpPostForm(oauthUrl, body)
 
-	var token model.Token
+	var token model.UserToken
 	// 读取响应
 	dataByte := util.GetRspBody(rsp)
 	// 将响应解析到token中
@@ -93,29 +93,26 @@ func RefreshToken(ctx iris.Context, state string) model.Token {
 	if err != nil {
 		fmt.Println("解析失败")
 	}
-
-	fmt.Println("原始数据:", string(dataByte))
 	return token
 }
 
 /**
  * 机器人获取授权
  */
-func GerBotAccessToken(ctx iris.Context, state string) model.Token {
+func GerBotAccessToken(ctx iris.Context, state string) model.BotToken {
 	// 交换token的url
 	oauthUrl := "https://osu.ppy.sh/oauth/token"
 	// 定义一个请求体
 	body := make(url.Values)
 	// 设置请求体参数
 	body.Add("grant_type", "client_credentials")
-	body.Add("redirect_uri", redirect_uri)
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
 	body.Add("scope", "public")
 
 	rsp := util.HttpPostForm(oauthUrl, body)
 
-	var token model.Token
+	var token model.BotToken
 	// 读取响应
 	dataByte := util.GetRspBody(rsp)
 	// 将响应解析到token中
@@ -123,8 +120,6 @@ func GerBotAccessToken(ctx iris.Context, state string) model.Token {
 	if err != nil {
 		fmt.Println("解析失败")
 	}
-
-	fmt.Println("原始数据:", string(dataByte))
 	return token
 }
 
@@ -161,8 +156,4 @@ func Oauth(ctx iris.Context) {
 		fmt.Println("绑定出现错误")
 		return
 	}
-}
-
-func SetOsuId(ctx iris.Context) {
-
 }
