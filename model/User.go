@@ -8,8 +8,8 @@ import "time"
 type User struct {
 	Id           int64
 	Qq           int64
-	OsuId        int64
-	MainMode     int64
+	OsuId        int
+	MainMode     int
 	AccessToken  string
 	RefreshToken string
 	Expiresin    int64
@@ -22,15 +22,4 @@ const (
 	taiko
 	fruits
 	mania
-)
-
-const (
-	ez = iota
-	nf
-	ht
-	hr
-	dt
-	nc
-	hd
-	fl
 )
