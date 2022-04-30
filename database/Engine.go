@@ -1,4 +1,4 @@
-package datasource
+package database
 
 import (
 	"KNBot/config"

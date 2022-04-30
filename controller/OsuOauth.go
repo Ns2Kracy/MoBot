@@ -54,13 +54,11 @@ func GetToken(ctx iris.Context, code, state string) model.UserToken {
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
 	// 发送请求
-	rsp := util.HttpPostForm(oauthUrl, body)
+	rsp, _ := util.HttpPostForm(oauthUrl, body)
 
 	var token model.UserToken
-	// 读取响应
-	dataByte := util.GetRspBody(rsp)
 	// 将响应解析到token中
-	err := json.Unmarshal(dataByte, &token)
+	err := json.Unmarshal(rsp, &token)
 	if err != nil {
 		fmt.Println("解析失败")
 	}
@@ -83,13 +81,11 @@ func RefreshToken(ctx iris.Context, state string) model.UserToken {
 	body.Add("grant_type", "refresh_token")
 	body.Add("redirect_uri", redirect_uri)
 	// 发送请求
-	rsp := util.HttpPostForm(oauthUrl, body)
+	rsp, _ := util.HttpPostForm(oauthUrl, body)
 
 	var token model.UserToken
-	// 读取响应
-	dataByte := util.GetRspBody(rsp)
 	// 将响应解析到token中
-	err := json.Unmarshal(dataByte, &token)
+	err := json.Unmarshal(rsp, &token)
 	if err != nil {
 		fmt.Println("解析失败")
 	}
@@ -110,13 +106,11 @@ func GerBotAccessToken(ctx iris.Context, state string) model.BotToken {
 	body.Add("client_secret", client_secret)
 	body.Add("scope", "public")
 
-	rsp := util.HttpPostForm(oauthUrl, body)
+	rsp, _ := util.HttpPostForm(oauthUrl, body)
 
 	var token model.BotToken
-	// 读取响应
-	dataByte := util.GetRspBody(rsp)
 	// 将响应解析到token中
-	err := json.Unmarshal(dataByte, &token)
+	err := json.Unmarshal(rsp, &token)
 	if err != nil {
 		fmt.Println("解析失败")
 	}

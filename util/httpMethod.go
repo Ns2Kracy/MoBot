@@ -9,7 +9,7 @@ import (
 	"net/url"
 )
 
-func HttpGet(url string) *http.Response {
+func HttpGet(url string) ([]byte, error) {
 	defer func() {
 		info := recover()
 		if info != nil {
@@ -21,10 +21,10 @@ func HttpGet(url string) *http.Response {
 		panic(err)
 	}
 	defer rsp.Body.Close()
-	return rsp
+	return GetRspBody(rsp), nil
 }
 
-func HttpPost(url string, data interface{}) *http.Response {
+func HttpPostJson(url string, data interface{}) ([]byte, error) {
 	defer func() {
 		info := recover()
 		if info != nil {
@@ -37,10 +37,10 @@ func HttpPost(url string, data interface{}) *http.Response {
 		panic(err)
 	}
 	defer rsp.Body.Close()
-	return rsp
+	return GetRspBody(rsp), nil
 }
 
-func HttpPostForm(url string, body url.Values) *http.Response {
+func HttpPostForm(url string, body url.Values) ([]byte, error) {
 	defer func() {
 		info := recover()
 		if info != nil {
@@ -55,7 +55,7 @@ func HttpPostForm(url string, body url.Values) *http.Response {
 	}
 	// 延迟关闭(十分重要)
 	defer rsp.Body.Close()
-	return rsp
+	return GetRspBody(rsp), nil
 }
 
 func GetRspBody(rsp *http.Response) []byte {

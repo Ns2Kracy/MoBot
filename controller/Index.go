@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"KNBot/datasource"
+	"KNBot/database"
 	"KNBot/service"
 )
 
 var (
-	db           = datasource.NewEngine()
+	db           = database.NewEngine()
 	OauthService = service.NewOauthService(db)
 	UserService  = service.NewUserService(db)
 	OsuService   = service.NewOsuService(db)

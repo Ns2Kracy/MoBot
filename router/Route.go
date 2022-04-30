@@ -1,4 +1,4 @@
-package route
+package router
 
 import (
 	"KNBot/controller"
@@ -10,8 +10,5 @@ func InitRoute(app *iris.Application) {
 	app.Party("/")
 	{
 		app.Get("/", controller.WsHandler)
-		app.Get("/", controller.BindUrl)
-		app.Get("/oauth2", controller.Oauth)
-
 	}
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="07926a58-42ad-4319-b4a3-474f4e929baf" name="Ns2Kracy">
+        <fileTransfer rootFolder="/root" accessType="SFTP" host="139.224.19.236" port="22" sshConfigId="726e6fa8-a25f-4d50-b83b-bbc81859b29e" sshConfig="root@139.224.19.236:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

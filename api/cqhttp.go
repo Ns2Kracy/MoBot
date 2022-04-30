@@ -1,10 +1,52 @@
 package api
 
 /*
- * 先把所有感觉会用的接口都写出来，然后再按照需求进行接口的组合
+ * 先把感觉会用的接口都写出来，然后再按照需求进行接口的组合
  */
 
 var Host = "http://localhost:5700"
+
+func HandleWsMsg(msg map[string]interface{}) {
+	switch msg["post_type"] {
+	// case "message":
+	case "message":
+		switch msg["group"] {
+		case "/infome":
+			// 调用infome函数
+
+		default:
+			break
+		}
+		break
+		switch msg["private"] {
+		default:
+			break
+		}
+	// case "notice":
+	//case "notice":
+	//	switch msg["notice_type"] {
+	//	default:
+	//		break
+	//	}
+	//	break
+	// case "request":
+	//case "request":
+	//	switch msg["request_type"] {
+	//	default:
+	//		break
+	//	}
+	//	break
+	// case "meta_event":
+	//case "meta_event":
+	//	switch msg["meta_event_type"] {
+	//	default:
+	//		break
+	//	}
+	//	break
+	default:
+		break
+	}
+}
 
 /**
  * 发送私聊消息
@@ -80,9 +122,3 @@ func SetGroupKick(group_id int64, user_id int64, reject_add_request bool) {}
 func SetGroupBan(group_id int64, user_id int64, reject_add_request bool) {
 
 }
-
-/**
- * 处理加好友请求
- * /set_friend_add_request
- * 参数说明：
- */

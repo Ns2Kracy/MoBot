@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"KNBot/Listener"
+	"KNBot/api"
 	"encoding/json"
 	"github.com/gorilla/websocket"
 	"github.com/kataras/iris/v12"
@@ -126,7 +126,7 @@ func (wsConn *wsConnection) processLoop() {
 			iris.New().Logger().Error("json信息解析错误", err.Error())
 		}
 		iris.New().Logger().Error("收到消息：", msgData)
-		go Listener.HandleWsMsg(msgData)
+		go api.HandleWsMsg(msgData)
 	}
 }
 
