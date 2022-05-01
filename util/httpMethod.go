@@ -21,7 +21,7 @@ func HttpGet(url string) ([]byte, error) {
 		panic(err)
 	}
 	defer rsp.Body.Close()
-	return GetRspBody(rsp), nil
+	return GetJSONRsp(rsp), nil
 }
 
 func HttpPostJson(url string, data interface{}) ([]byte, error) {
@@ -37,7 +37,7 @@ func HttpPostJson(url string, data interface{}) ([]byte, error) {
 		panic(err)
 	}
 	defer rsp.Body.Close()
-	return GetRspBody(rsp), nil
+	return GetJSONRsp(rsp), nil
 }
 
 func HttpPostForm(url string, body url.Values) ([]byte, error) {
@@ -55,10 +55,17 @@ func HttpPostForm(url string, body url.Values) ([]byte, error) {
 	}
 	// 延迟关闭(十分重要)
 	defer rsp.Body.Close()
-	return GetRspBody(rsp), nil
+	return GetJSONRsp(rsp), nil
 }
 
-func GetRspBody(rsp *http.Response) []byte {
+func GetJSONRsp(rsp *http.Response) []byte {
 	body, _ := ioutil.ReadAll(rsp.Body)
+
 	return body
+}
+
+func GetStringRsp(rsp *http.Response) string {
+	// 将返回的body转换为字符串
+	body, _ := ioutil.ReadAll(rsp.Body)
+	return string(body)
 }
