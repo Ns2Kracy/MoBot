@@ -1,26 +1,23 @@
 package service
 
 import (
-	"KNBot/service/Oauth"
-	"KNBot/service/OsuUser"
-	"KNBot/service/User"
 	"xorm.io/xorm"
 )
 
-func NewOauthService(db *xorm.Engine) Oauth.Oauth2Service {
-	return Oauth.Oauth2Service{
+func NewOauthService(db *xorm.Engine) Oauth2Service {
+	return Oauth2Service{
 		Db: db,
 	}
 }
 
-func NewUserService(db *xorm.Engine) User.UserService {
-	return User.UserService{
+func NewUserService(db *xorm.Engine) UserService {
+	return UserService{
 		Db: db,
 	}
 }
 
-func NewOsuService(db *xorm.Engine) OsuUser.OsuService {
-	return OsuUser.OsuService{
+func NewOsuService(db *xorm.Engine) OsuService {
+	return OsuService{
 		Db: db,
 	}
 }

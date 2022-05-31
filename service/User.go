@@ -1,4 +1,4 @@
-package User
+package service
 
 import (
 	"KNBot/model"

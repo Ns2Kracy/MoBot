@@ -1,4 +1,4 @@
-package Oauth
+package service
 
 import (
 	"KNBot/model"

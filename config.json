@@ -8,7 +8,7 @@
     "port": "3306",
     "user": "root",
     "pwd": "nk20021001",
-    "database": "knBot"
+    "database": "kNBot"
   },
   "mode": "debug"
 }

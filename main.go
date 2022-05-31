@@ -6,8 +6,14 @@ import (
 )
 
 func main() {
+	app := newApp()
+	app.Run(iris.Addr(":5700"))
+}
+
+func newApp() *iris.Application {
 	app := iris.New()
 	router.InitRoute(app)
 	app.Logger().SetLevel("debug")
-	app.Run(iris.Addr(":5700"))
+
+	return app
 }

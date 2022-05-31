@@ -1,4 +1,4 @@
-package OsuUser
+package service
 
 import "xorm.io/xorm"
 
