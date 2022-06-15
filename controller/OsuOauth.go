@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"KNBot/model"
-	"KNBot/util"
+	"MoBot/model"
+	"MoBot/util"
 	"encoding/json"
 	"fmt"
 	"github.com/kataras/iris/v12"
@@ -26,8 +26,8 @@ const (
  * 会通过coolq来获取发送绑定命令者的一些参数
  * 处理这些参数作为id
  */
-func AssembleAuthorizationUrl(state string) string {
-	state = GetState()
+func AssembleAuthorizationUrl(ctx iris.Context, state string) string {
+	state = ctx.URLParam("state")
 	URL := "https://osu.ppy.sh/oauth/authorize" +
 		"?state=" + state +
 		"&redirect_uri=" + redirect_uri +
@@ -74,10 +74,11 @@ func RefreshToken(ctx iris.Context, state string) model.UserToken {
 	oauthUrl := "https://osu.ppy.sh/oauth/token"
 	// 定义一个请求体
 	body := make(url.Values)
+	state = ctx.URLParam("state")
 	// 设置请求体参数
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
-	body.Add("refresh_token", OauthService.GetFreshToken(GetState()))
+	body.Add("refresh_token", OauthService.GetFreshToken(state))
 	body.Add("grant_type", "refresh_token")
 	body.Add("redirect_uri", redirect_uri)
 	// 发送请求

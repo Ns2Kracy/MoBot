@@ -1,7 +1,6 @@
 package database
 
 import (
-	"KNBot/config"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 
@@ -9,10 +8,12 @@ import (
 )
 
 func NewEngine() *xorm.Engine {
-	initConfig := config.InitMysqlConfig()
-	if initConfig == nil {
-		return nil
-	}
+	/*
+		initConfig := config.InitMysqlConfig()
+		if initConfig == nil {
+			return nil
+		}
+	*/
 
 	//database := initConfig
 

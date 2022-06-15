@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"KNBot/database"
-	"KNBot/service"
+	"MoBot/database"
+	"MoBot/service"
 )
 
 var (

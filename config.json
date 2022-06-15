@@ -1,14 +1,13 @@
 {
-  "app_name": "KNBot",
+  "app_name": "MoBot",
   "app_version": "1.0.0",
-  "static_path": "/static",
   "mysql": {
-    "drive": "mysql",
-    "host": "139.224.19.236",
-    "port": "3306",
-    "user": "root",
-    "pwd": "123456",
-    "database": "kNBot"
+    "drive": "",
+    "host": "",
+    "port": "",
+    "user": "",
+    "pwd": "",
+    "database": ""
   },
   "mode": "debug"
 }

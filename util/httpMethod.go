@@ -28,7 +28,7 @@ func HttpPostJson(url string, data interface{}) ([]byte, error) {
 	defer func() {
 		info := recover()
 		if info != nil {
-			iris.New().Logger().Info("recover from http.Post", info)
+			iris.New().Logger().Printf("recover from http.Post", info)
 		}
 	}()
 	jsonStr, _ := json.Marshal(data)

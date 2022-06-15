@@ -1,4 +1,4 @@
-module KNBot
+module MoBot
 
 go 1.18
 

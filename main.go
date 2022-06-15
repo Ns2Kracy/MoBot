@@ -1,7 +1,7 @@
 package main
 
 import (
-	"KNBot/router"
+	"MoBot/router"
 	"github.com/kataras/iris/v12"
 )
 

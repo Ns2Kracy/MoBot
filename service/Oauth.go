@@ -1,7 +1,7 @@
 package service
 
 import (
-	"KNBot/model"
+	"MoBot/model"
 	"xorm.io/xorm"
 )
 
@@ -25,8 +25,4 @@ func (os *Oauth2Service) GetFreshToken(state string) string {
 		return "token失效或者无此token"
 	}
 	return User.AccessToken
-}
-
-func (os *Oauth2Service) GetExpiresIn(state string) int64 {
-	return 1
 }
