@@ -7,7 +7,7 @@
     "host": "139.224.19.236",
     "port": "3306",
     "user": "root",
-    "pwd": "nk20021001",
+    "pwd": "123456",
     "database": "kNBot"
   },
   "mode": "debug"
