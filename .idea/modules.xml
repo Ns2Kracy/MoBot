@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/KNBot.iml" filepath="$PROJECT_DIR$/.idea/KNBot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/MoBot.iml" filepath="$PROJECT_DIR$/.idea/MoBot.iml" />
     </modules>
   </component>
 </project>
