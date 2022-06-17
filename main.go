@@ -1,19 +1,38 @@
 package main
 
 import (
+	"MoBot/core"
+	"MoBot/database"
+	"MoBot/global"
 	"MoBot/router"
+	"fmt"
 	"github.com/kataras/iris/v12"
+	"go.uber.org/zap"
 )
 
 func main() {
-	app := newApp()
-	app.Run(iris.Addr(":5700"))
+	global.GVA_VP = core.Viper() //初始化Viper
+	global.GVA_LOG = core.Zap()  //初始化zap日志库
+	zap.ReplaceGlobals(global.GVA_LOG)
+	global.GVA_DB = database.XormMysql() //初始化数据库
+	if global.GVA_DB != nil {
+		//创建数据库表
+		database.RegisterTables(global.GVA_DB)
+		//延迟关闭数据库
+		db := global.GVA_DB.DB()
+		defer db.Close()
+	}
+
+	//运行服务
+	newApp()
 }
 
 func newApp() *iris.Application {
 	app := iris.New()
 	router.InitRoute(app)
-	app.Logger().SetLevel("debug")
-
+	address := fmt.Sprintf(":%d", global.GVA_CONFIG.System.Addr)
+	if err := app.Run(iris.Addr(address), iris.WithoutServerError(iris.ErrServerClosed)); err != nil {
+		global.GVA_LOG.Error("run server failed", zap.Error(err))
+	}
 	return app
 }

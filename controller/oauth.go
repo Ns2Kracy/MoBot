@@ -78,7 +78,7 @@ func RefreshToken(ctx iris.Context, state string) model.UserToken {
 	// 设置请求体参数
 	body.Add("client_id", client_id)
 	body.Add("client_secret", client_secret)
-	body.Add("refresh_token", OauthService.GetFreshToken(state))
+	body.Add("refresh_token", "OauthService.GetFreshToken(state)")
 	body.Add("grant_type", "refresh_token")
 	body.Add("redirect_uri", redirect_uri)
 	// 发送请求

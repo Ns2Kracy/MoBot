@@ -1,23 +1,9 @@
 package service
 
-import (
-	"xorm.io/xorm"
-)
-
-func NewOauthService(db *xorm.Engine) Oauth2Service {
-	return Oauth2Service{
-		Db: db,
-	}
+type ServiceGroup struct {
+	UserService
+	OsuService
+	Oauth2Service
 }
 
-func NewUserService(db *xorm.Engine) UserService {
-	return UserService{
-		Db: db,
-	}
-}
-
-func NewOsuService(db *xorm.Engine) OsuService {
-	return OsuService{
-		Db: db,
-	}
-}
+var ServiceGroups = new(ServiceGroup)

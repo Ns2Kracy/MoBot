@@ -1,22 +1,20 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/kataras/iris/v12"
+	"log"
 	"net/http"
 	"sync"
-	"time"
 )
 
 // 通过正向WebSocket来和gocqhttp进行通信
 // 使用gorilla/websocket来实现
 
 const (
-	writeWait  = 10 * time.Second
-	pongWait   = 60 * time.Second
-	pingPeriod = (pongWait * 9) / 10
+	MaxMessageSize = 51200
 )
 
 var wsUpgrader = websocket.Upgrader{
@@ -33,6 +31,9 @@ type wsMessage struct {
 	message     []byte
 }
 
+// 用于广播
+var WsConnAll map[int64]*wsConnection
+
 type wsConnection struct {
 	wsSocket *websocket.Conn // 底层websocket
 	inChan   chan *wsMessage // 读队列
@@ -43,94 +44,90 @@ type wsConnection struct {
 	closeChan chan byte // 关闭通知
 }
 
-func (wsConn *wsConnection) wsReadLoop() {
+// 读取消息队列中的消息
+func (wsConn *wsConnection) wsRead() (*wsMessage, error) {
+	select {
+	case msg := <-wsConn.inChan:
+		// 获取到消息队列中的消息
+		return msg, nil
+	case <-wsConn.closeChan:
+		return &wsMessage{}, errors.New("连接已经关闭")
+	}
+}
+
+// 写入消息到队列中
+func (wsConn *wsConnection) wsWrite(messageType int, data []byte) error {
+	select {
+	case wsConn.outChan <- &wsMessage{messageType, data}:
+	case <-wsConn.closeChan:
+		return errors.New("连接已经关闭")
+	}
+	return nil
+}
+
+// 处理队列中的消息
+func processLoop(wsConn *wsConnection) {
 	for {
-		// 读一个message
+		// 从队列中取出一个消息
+		msg, err := wsConn.wsRead()
+		if err != nil {
+			log.Printf("wsRead error: %v", err)
+		}
+		var msgData map[string]interface{}
+		err = json.Unmarshal(msg.message, &msgData)
+		if err != nil {
+			log.Printf("json.Unmarshal error: %v", err)
+		}
+		// 没写好，先留着
+		// go HandleWsMsg(msgData)
+	}
+}
+
+// 处理消息队列中的消息
+func wsReadLoop(wsConn *wsConnection) {
+	// 设置消息的最大长度
+	wsConn.wsSocket.SetReadLimit(MaxMessageSize)
+	for {
 		msgType, data, err := wsConn.wsSocket.ReadMessage()
 		if err != nil {
-			goto error
+			websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure)
+			wsConn.wsClose()
+			break
 		}
 		req := &wsMessage{
 			msgType,
 			data,
 		}
-		// 放入请求队列
+		// 放入请求队列,消息入栈
 		select {
 		case wsConn.inChan <- req:
 		case <-wsConn.closeChan:
-			goto closed
+			break
 		}
 	}
-error:
-	wsConn.wsClose()
-closed:
 }
 
-func (wsConn *wsConnection) wsWriteLoop() {
+// 发送消息给客户端
+func wsWriteLoop(wsConn *wsConnection) {
 	for {
 		select {
 		// 取一个应答
 		case msg := <-wsConn.outChan:
 			// 写给websocket
 			if err := wsConn.wsSocket.WriteMessage(msg.messageType, msg.message); err != nil {
-				goto error
+
+				// 切断服务
+				wsConn.wsClose()
+				return
+				//break
 			}
 		case <-wsConn.closeChan:
-			goto closed
-		}
-	}
-error:
-	wsConn.wsClose()
-closed:
-}
-
-func (wsConn *wsConnection) procLoop() {
-	// 启动一个gouroutine发送心跳
-	// 先写一个空的心跳
-	go func() {
-		wsConn.wsWrite(websocket.PingMessage, []byte{})
-		ticker := time.NewTicker(pingPeriod)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-ticker.C:
-				if err := wsConn.wsWrite(websocket.PingMessage, []byte{}); err != nil {
-					fmt.Println("heartbeat fail...")
-					wsConn.wsClose()
-				}
-				break
-			}
-		}
-	}()
-	/*
-		go func() {
-			for {
-				time.Sleep(60 * time.Second)
-				if err := wsConn.wsWrite(websocket.TextMessage, []byte("heartbeat from server")); err != nil {
-					fmt.Println("heartbeat fail")
-					wsConn.wsClose()
-					break
-				}
-			}
-		}()
-	*/
-
-	// 这是一个同步处理模型（只是一个例子），如果希望并行处理可以每个请求一个gorutine，注意控制并发goroutine的数量!!!
-	for {
-		msg, err := wsConn.wsRead()
-		if err != nil {
-			fmt.Println("read fail")
-			break
-		}
-		fmt.Println(string(msg.message))
-		err = wsConn.wsWrite(msg.messageType, msg.message)
-		if err != nil {
-			fmt.Println("write fail")
+			// 关闭websocket
+			wsConn.wsClose()
 			break
 		}
 	}
 }
-
 func WsHandler(ctx iris.Context) {
 
 	// 应答客户端告知升级连接为websocket
@@ -147,29 +144,11 @@ func WsHandler(ctx iris.Context) {
 	}
 
 	// 处理器
-	go wsConn.procLoop()
+	go processLoop(wsConn)
 	// 读协程
-	go wsConn.wsReadLoop()
+	go wsReadLoop(wsConn)
 	// 写协程
-	go wsConn.wsWriteLoop()
-}
-
-func (wsConn *wsConnection) wsWrite(messageType int, data []byte) error {
-	select {
-	case wsConn.outChan <- &wsMessage{messageType, data}:
-	case <-wsConn.closeChan:
-		return errors.New("websocket closed")
-	}
-	return nil
-}
-
-func (wsConn *wsConnection) wsRead() (*wsMessage, error) {
-	select {
-	case msg := <-wsConn.inChan:
-		return msg, nil
-	case <-wsConn.closeChan:
-	}
-	return nil, errors.New("websocket closed")
+	go wsWriteLoop(wsConn)
 }
 
 func (wsConn *wsConnection) wsClose() {

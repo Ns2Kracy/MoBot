@@ -1,2 +1,40 @@
-# 创建配置文件
+# zap logger configuration
+zap:
+  level: 'info'
+  format: 'console'
+  prefix: '[ns2kracy/mobot]'
+  director: 'log'
+  show-line: true
+  encode-level: 'LowercaseColorLevelEncoder'
+  stacktrace-key: 'stacktrace'
+  log-in-console: true
 
+# system configuration
+system:
+  env: 'debug'  # Change to "develop" to skip authentication for development mode
+  addr: 5700
+  db-type: 'mysql'
+  use-redis: false     # 使用redis
+  use-multipoint: false
+  # IP限制次数 一个小时15000次
+  iplimit-count: 15000
+  #  IP限制一个小时
+  iplimit-time: 3600
+
+# mysql connect configuration
+mysql:
+  path: '139.224.19.236'
+  port: '3306'
+  database: 'mobot'
+  driver: 'mysql'
+  config: 'charset=utf8&parseTime=True&loc=Local'
+  username: 'root'
+  password: '123456'
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-mode: "debug"
+  log-zap: false
+
+# local configuration
+local:
+  path: 'uploads/file'
