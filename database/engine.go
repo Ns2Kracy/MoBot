@@ -31,15 +31,6 @@ func XormMysql() *xorm.Engine {
 	return db
 }
 
-//if db, err := xorm.Open(mysql.New(mysqlConfig), &gorm.Config{}); err != nil {
-//	return nil
-//} else {
-//	sqlDB, _ := db.DB()
-//	sqlDB.SetMaxOpenConns(m.MaxOpenConns)
-//	sqlDB.SetMaxIdleConns(m.MaxIdleConns)
-//	return db
-//}
-
 // 自动建立表结构
 func RegisterTables(db *xorm.Engine) {
 	err := db.Sync2()

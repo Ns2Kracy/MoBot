@@ -79,7 +79,7 @@ func processLoop(wsConn *wsConnection) {
 			log.Printf("json.Unmarshal error: %v", err)
 		}
 		// 没写好，先留着
-		// go HandleWsMsg(msgData)
+		go HandleWsMsg(msgData)
 	}
 }
 
