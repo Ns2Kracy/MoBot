@@ -1,0 +1,3 @@
+[ns18kracy/mobot]2022/06/18 - 23:28:58.882	[31merror[0m	D:/SomeCoding/Go/GoProject/MoBot/util/http_method.go:22	http.Get	{"err": "parse \"127.0.0.1:5700/send_group_msg?group_id=796347507&message=pong\": first path segment in URL cannot contain colon"}
+[ns18kracy/mobot]2022/06/18 - 23:31:43.962	[31merror[0m	D:/SomeCoding/Go/GoProject/MoBot/util/http_method.go:22	http.Get	{"err": "Get \"?r18=0\": unsupported protocol scheme \"\""}
+[ns18kracy/mobot]2022/06/18 - 23:34:11.573	[31merror[0m	D:/SomeCoding/Go/GoProject/MoBot/util/http_method.go:22	http.Get	{"err": "Get \"/send_group_msg?group_id=796347507&message=pong\": unsupported protocol scheme \"\""}

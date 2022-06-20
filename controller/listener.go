@@ -2,14 +2,12 @@ package controller
 
 import (
 	"MoBot/global"
-	"MoBot/util"
 	"go.uber.org/zap"
 	"strconv"
 )
 
 func HandleWsMsg(msg map[string]interface{}) {
 	// fmt.Println(msg)
-	global.GVA_LOG.Info("消息分发", zap.Any("消息", msg))
 	switch msg["post_type"] {
 	case "message":
 		// 细分消息类型
@@ -43,7 +41,7 @@ func HandleWsMsg(msg map[string]interface{}) {
 
 // 将 global.GVA_CONFIG.System.Addr 转换为 ip:port
 func GetAddrPort() string {
-	return "http://localhost:" + strconv.Itoa(global.GVA_CONFIG.System.Addr)
+	return global.GVA_CONFIG.System.Host + strconv.Itoa(global.GVA_CONFIG.System.Port)
 }
 
 // 分发群消息
@@ -51,16 +49,14 @@ func HandleGroupMsg(msg map[string]interface{}) {
 
 	global.GVA_LOG.Info("群聊消息", zap.Any("消息", msg))
 	cmd := FilterMsg(msg)
-	groupId := strconv.FormatFloat(msg["group_id"].(float64), 'f', -1, 64)
-	global.GVA_LOG.Info("Host", zap.Any("地址", GetAddrPort()))
-	global.GVA_LOG.Info("GroupID:", zap.Any("群号", groupId))
-	global.GVA_LOG.Info("funcName:", zap.Any("功能名", cmd))
+	// groupId := strconv.FormatFloat(msg["group_id"].(float64), 'f', -1, 64)
 	switch cmd {
-	case "/ping":
-		// 如果指令是ping,则回复mooooooooooooooooooooooole!
-		util.HttpGet(GetAddrPort() + "/send_group_msg?group_id=" + groupId + "&message=" + "mooooooooooooooooooooooole!")
-		//util.SendGroupMessage(groupId, "mooooooooooooooooooooooole!")
+	case `/setu`:
 		break
+	case `/ping`:
+
+		break
+
 	}
 
 }

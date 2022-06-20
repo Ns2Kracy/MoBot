@@ -44,6 +44,11 @@ type wsConnection struct {
 	closeChan chan byte // 关闭通知
 }
 
+var (
+	RcvChan  chan *wsMessage
+	SendChan chan *wsMessage
+)
+
 // 读取消息队列中的消息
 func (wsConn *wsConnection) wsRead() (*wsMessage, error) {
 	select {
@@ -78,7 +83,6 @@ func processLoop(wsConn *wsConnection) {
 		if err != nil {
 			log.Printf("json.Unmarshal error: %v", err)
 		}
-		// 没写好，先留着
 		go HandleWsMsg(msgData)
 	}
 }
