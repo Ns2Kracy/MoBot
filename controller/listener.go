@@ -1,7 +1,9 @@
 package controller
 
 import (
-	"MoBot/global"
+	"MoBot/config"
+	"MoBot/log"
+	"MoBot/plugins"
 	"go.uber.org/zap"
 	"strconv"
 )
@@ -41,20 +43,21 @@ func HandleWsMsg(msg map[string]interface{}) {
 
 // 将 global.GVA_CONFIG.System.Addr 转换为 ip:port
 func GetAddrPort() string {
-	return global.GVA_CONFIG.System.Host + strconv.Itoa(global.GVA_CONFIG.System.Port)
+	return config.GVA_CONFIG.System.Host + strconv.Itoa(config.GVA_CONFIG.System.Port)
 }
 
 // 分发群消息
 func HandleGroupMsg(msg map[string]interface{}) {
 
-	global.GVA_LOG.Info("群聊消息", zap.Any("消息", msg))
+	log.GVA_LOG.Info("群聊消息", zap.Any("消息", msg))
 	cmd := FilterMsg(msg)
-	// groupId := strconv.FormatFloat(msg["group_id"].(float64), 'f', -1, 64)
+	// 获取msg["group_id"].(float64)，并转换为int64
+	groupId := int64(msg["group_id"].(float64))
 	switch cmd {
 	case `/setu`:
 		break
 	case `/ping`:
-
+		SendGroupMessage(groupId, plugins.Ping())
 		break
 
 	}

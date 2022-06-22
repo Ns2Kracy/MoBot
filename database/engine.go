@@ -1,7 +1,8 @@
 package database
 
 import (
-	"MoBot/global"
+	"MoBot/config"
+	"MoBot/log"
 	_ "github.com/go-sql-driver/mysql"
 	"go.uber.org/zap"
 	"os"
@@ -10,7 +11,7 @@ import (
 
 //初始化xorm数据库
 func XormMysql() *xorm.Engine {
-	m := global.GVA_CONFIG.MySql
+	m := config.GVA_CONFIG.MySql
 	//数据库名为空返回nil
 	if m.Database == "" {
 		return nil
@@ -21,13 +22,13 @@ func XormMysql() *xorm.Engine {
 	//初始化数据库
 	db, err := xorm.NewEngine(m.Driver, dsn)
 	if err != nil {
-		global.GVA_LOG.Error("init mysql failed", zap.Error(err))
+		log.GVA_LOG.Error("init mysql failed", zap.Error(err))
 		os.Exit(0)
 	}
 
 	db.SetMaxIdleConns(m.MaxIdleConns)
 	db.SetMaxOpenConns(m.MaxOpenConns)
-	global.GVA_LOG.Info("init mysql success")
+	log.GVA_LOG.Info("init mysql success")
 	return db
 }
 
@@ -36,8 +37,8 @@ func RegisterTables(db *xorm.Engine) {
 	err := db.Sync2()
 
 	if err != nil {
-		global.GVA_LOG.Error("register table failed", zap.Error(err))
+		log.GVA_LOG.Error("register table failed", zap.Error(err))
 		os.Exit(0)
 	}
-	global.GVA_LOG.Info("register table success")
+	log.GVA_LOG.Info("register table success")
 }

@@ -2,8 +2,8 @@
 zap:
   level: 'info'
   format: 'console'
-  prefix: '[ns2kracy/mobot]'
-  director: 'log'
+  prefix: '[ns2kracy/mobot/log]'
+  director: 'logs'
   show-line: true
   encode-level: 'LowercaseColorLevelEncoder'
   stacktrace-key: 'stacktrace'

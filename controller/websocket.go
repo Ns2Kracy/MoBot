@@ -10,9 +10,6 @@ import (
 	"sync"
 )
 
-// 通过正向WebSocket来和gocqhttp进行通信
-// 使用gorilla/websocket来实现
-
 const (
 	MaxMessageSize = 51200
 )
@@ -32,9 +29,9 @@ type wsMessage struct {
 }
 
 // 用于广播
-var WsConnAll map[int64]*wsConnection
+var WsConnAll map[int64]*WsConnection
 
-type wsConnection struct {
+type WsConnection struct {
 	wsSocket *websocket.Conn // 底层websocket
 	inChan   chan *wsMessage // 读队列
 	outChan  chan *wsMessage // 写队列
@@ -50,7 +47,7 @@ var (
 )
 
 // 读取消息队列中的消息
-func (wsConn *wsConnection) wsRead() (*wsMessage, error) {
+func (wsConn *WsConnection) wsRead() (*wsMessage, error) {
 	select {
 	case msg := <-wsConn.inChan:
 		// 获取到消息队列中的消息
@@ -61,7 +58,7 @@ func (wsConn *wsConnection) wsRead() (*wsMessage, error) {
 }
 
 // 写入消息到队列中
-func (wsConn *wsConnection) wsWrite(messageType int, data []byte) error {
+func (wsConn *WsConnection) WsWrite(messageType int, data []byte) error {
 	select {
 	case wsConn.outChan <- &wsMessage{messageType, data}:
 	case <-wsConn.closeChan:
@@ -71,7 +68,7 @@ func (wsConn *wsConnection) wsWrite(messageType int, data []byte) error {
 }
 
 // 处理队列中的消息
-func processLoop(wsConn *wsConnection) {
+func processLoop(wsConn *WsConnection) {
 	for {
 		// 从队列中取出一个消息
 		msg, err := wsConn.wsRead()
@@ -88,7 +85,7 @@ func processLoop(wsConn *wsConnection) {
 }
 
 // 处理消息队列中的消息
-func wsReadLoop(wsConn *wsConnection) {
+func wsReadLoop(wsConn *WsConnection) {
 	// 设置消息的最大长度
 	wsConn.wsSocket.SetReadLimit(MaxMessageSize)
 	for {
@@ -112,7 +109,7 @@ func wsReadLoop(wsConn *wsConnection) {
 }
 
 // 发送消息给客户端
-func wsWriteLoop(wsConn *wsConnection) {
+func wsWriteLoop(wsConn *WsConnection) {
 	for {
 		select {
 		// 取一个应答
@@ -139,7 +136,7 @@ func WsHandler(ctx iris.Context) {
 	if err != nil {
 		return
 	}
-	wsConn := &wsConnection{
+	wsConn := &WsConnection{
 		wsSocket:  wsSocket,
 		inChan:    make(chan *wsMessage, 1000),
 		outChan:   make(chan *wsMessage, 1000),
@@ -155,7 +152,7 @@ func WsHandler(ctx iris.Context) {
 	go wsWriteLoop(wsConn)
 }
 
-func (wsConn *wsConnection) wsClose() {
+func (wsConn *WsConnection) wsClose() {
 	wsConn.wsSocket.Close()
 
 	wsConn.mutex.Lock()

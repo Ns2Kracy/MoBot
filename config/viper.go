@@ -1,7 +1,6 @@
-package core
+package config
 
 import (
-	"MoBot/global"
 	"flag"
 	"fmt"
 
@@ -39,13 +38,13 @@ func Viper(path ...string) *viper.Viper {
 	v.OnConfigChange(func(e fsnotify.Event) {
 		fmt.Println("config file changed:", e.Name)
 		//装配总配置文件
-		if err := v.Unmarshal(&global.GVA_CONFIG); err != nil {
+		if err := v.Unmarshal(&GVA_CONFIG); err != nil {
 			fmt.Println(err)
 		}
 	})
 
 	//装配总配置文件
-	if err := v.Unmarshal(&global.GVA_CONFIG); err != nil {
+	if err := v.Unmarshal(&GVA_CONFIG); err != nil {
 		fmt.Println(err)
 	}
 	return v

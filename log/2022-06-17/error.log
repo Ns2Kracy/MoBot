@@ -1,2 +1,0 @@
-[ns17kracy/mobot]2022/06/17 - 23:46:41.767	[31merror[0m	D:/SomeCoding/Go/GoProject/MoBot/database/engine.go:23	init mysql failed	{"error": "unsupported driver name: "}
-[ns17kracy/mobot]2022/06/17 - 23:47:03.410	[31merror[0m	D:/SomeCoding/Go/GoProject/MoBot/database/engine.go:23	init mysql failed	{"error": "sql: unknown driver \"mysql\" (forgotten import?)"}

@@ -1,10 +1,12 @@
 package util
 
 import (
-	"MoBot/global"
+	"MoBot/config"
+	"MoBot/log"
 	"bytes"
 	"encoding/json"
 	"go.uber.org/zap"
+
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -14,12 +16,12 @@ func HttpGet(url string) *http.Response {
 	defer func() {
 		info := recover()
 		if info != nil {
-			global.GVA_LOG.Info("recover from http.Get", zap.Any("info", info))
+			log.GVA_LOG.Info("recover from http.Get", zap.Any("info", info))
 		}
 	}()
 	rsp, err := http.Get(url)
 	if err != nil {
-		global.GVA_LOG.Error("http.Get", zap.Any("err", err))
+		log.GVA_LOG.Error("http.Get", zap.Any("err", err))
 	}
 	return rsp
 }
@@ -36,7 +38,7 @@ func HttpProxyGet(URL string, proxy string) *http.Response {
 	defer func() {
 		info := recover()
 		if info != nil {
-			global.GVA_LOG.Info("recover from http.Get", zap.Any("info", info))
+			log.GVA_LOG.Info("recover from http.Get", zap.Any("info", info))
 		}
 	}()
 
@@ -51,13 +53,13 @@ func HttpPostJson(url string, data interface{}) *http.Response {
 	defer func() {
 		info := recover()
 		if info != nil {
-			global.GVA_LOG.Info("recover from http.Post", zap.Any("info", info))
+			log.GVA_LOG.Info("recover from http.Post", zap.Any("info", info))
 		}
 	}()
 	jsonStr, _ := json.Marshal(data)
 	rsp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonStr))
 	if err != nil {
-		global.GVA_LOG.Error("http.Post", zap.Any("err", err))
+		log.GVA_LOG.Error("http.Post", zap.Any("err", err))
 	}
 	return rsp
 }
@@ -66,14 +68,14 @@ func HttpPostForm(url string, body url.Values) *http.Response {
 	defer func() {
 		info := recover()
 		if info != nil {
-			global.GVA_LOG.Info("recover from http.PostForm", zap.Any("info", info))
+			log.GVA_LOG.Info("recover from http.PostForm", zap.Any("info", info))
 		}
 	}()
 	rsp, err := http.PostForm(url, body)
 	rsp.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rsp.Header.Set("Accept", "application/x-www-form-urlencoded")
 	if err != nil {
-		global.GVA_LOG.Error("http.PostForm", zap.Any("err", err))
+		log.GVA_LOG.Error("http.PostForm", zap.Any("err", err))
 	}
 	// 延迟关闭(十分重要)
 	defer rsp.Body.Close()
@@ -89,19 +91,34 @@ func GetRspBody(rsp *http.Response) []byte {
 func NewHttpRequest(method, url string, body, contentType interface{}) *http.Request {
 	var req *http.Request
 	var err error
+	reqBody := bytes.NewBuffer([]byte(body.(string)))
 	if method == "POST" {
-		if contentType == global.JSON_Type {
-			req, err = http.NewRequest(method, url, bytes.NewBuffer([]byte(body.(string))))
-		} else if contentType == global.Form_Type {
-			req, err = http.NewRequest(method, url, bytes.NewBufferString(body.(string)))
+		if contentType == config.JSON_Type {
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Accept", "application/json")
+
+			req, err = http.NewRequest(method, url, reqBody)
+		} else if contentType == config.Form_Type {
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+			req.Header.Set("Accept", "application/x-www-form-urlencoded")
+
+			req, err = http.NewRequest(method, url, reqBody)
 		} else {
-			req, err = http.NewRequest(method, url, nil)
+			req, err = http.NewRequest(method, url, reqBody)
 		}
 	} else {
 		req, err = http.NewRequest(method, url, nil)
 	}
+	switch method {
+	case "POST":
+		break
+	case "GET":
+		break
+	default:
+		break
+	}
 	if err != nil {
-		global.GVA_LOG.Error("http.NewRequest", zap.Any("err", err))
+		log.GVA_LOG.Error("http.NewRequest", zap.Any("err", err))
 	}
 	return req
 }
