@@ -13,9 +13,12 @@ import (
 var GVA_LOG *zap.Logger
 
 func Zap() (logger *zap.Logger) {
-	//直接创建日志目录文件夹
-	fmt.Printf("create %v directory\n", config.GVA_CONFIG.Zap.Director)
-	_ = os.Mkdir(config.GVA_CONFIG.Zap.Director, os.ModePerm)
+	//判断文件夹是否存在,如果不存在则创建日志目录文件夹
+	if _, err := os.Stat(config.GVA_CONFIG.Zap.Director); os.IsNotExist(err) {
+		fmt.Printf("create %v directory\n", config.GVA_CONFIG.Zap.Director)
+		os.Mkdir(config.GVA_CONFIG.Zap.Director, os.ModePerm)
+	}
+
 	// 调试级别
 	debugPriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
 		return lev == zap.DebugLevel

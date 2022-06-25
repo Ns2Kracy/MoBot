@@ -1,46 +1,53 @@
 package controller
 
 import (
-	"MoBot/config"
+	"MoBot/log"
 	"MoBot/model"
-	"MoBot/util"
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/websocket"
-	"strconv"
+	"go.uber.org/zap"
 )
 
-func SendWsMessage(msg string) {
-	// 调用WsWrite
-	wsConn := WsConnection{}
-	wsConn.WsWrite(websocket.TextMessage, []byte(msg))
+var wsEvent *websocket.Conn
+
+func initWsEvent(conn *websocket.Conn) {
+	wsEvent = conn
 }
 
-func SendPrivateMessage(UserId, GroupId int64, msg string) {
-	Message := &model.Message{
-		Params: model.Params{
-			UserId:  strconv.FormatInt(UserId, 10),
-			GroupID: strconv.FormatInt(GroupId, 10),
-			Message: msg,
-		},
+// SendPrivateMessage 发送私聊消息
+func SendPrivateMessage(UserId int64, message interface{}) {
+	msg := model.PrivateMessage{
 		Action: "/send_private_msg",
-		Echo:   "",
+		Params: struct {
+			UserId  int64       `json:"user_id"`
+			Message interface{} `json:"message"`
+		}{UserId: UserId, Message: message},
 	}
-	// 将Message转换为json格式
-	message, _ := json.Marshal(Message)
-	_ = util.NewHttpRequest("POST", "127.0.0.1:5700/", message, config.Form_Type)
+	msgData, err := json.Marshal(msg)
+	if err != nil {
+		log.GVA_LOG.Error("SendprivateMessage error", zap.Error(err))
+	}
+	fmt.Println(string(msgData))
+	// 调用websocket发送消息
+	var WsApi WsConnection
+	WsApi.Send(websocket.BinaryMessage, msgData)
 }
 
-func SendGroupMessage(GroupId int64, msg string) {
-	Message := &model.Message{
-		Params: model.Params{
-			GroupID: strconv.FormatInt(GroupId, 10),
-			Message: msg,
-		},
-		Action: "/send_group_msg",
-		Echo:   "",
+// SendGroupMessage 发送群聊消息
+func SendGroupMessage(GroupId int64, message interface{}) {
+	msg := model.GroupMessage{
+		Action: "",
+		Params: struct {
+			GroupId int64       `json:"group_id"`
+			Message interface{} `json:"message"`
+		}{GroupId: GroupId, Message: message},
 	}
-	// 将Message转换为json格式
-	message, _ := json.Marshal(Message)
 
-	_ = util.NewHttpRequest("POST", "127.0.0.1:5700/", message, config.Form_Type)
+	msgData, err := json.Marshal(msg)
+	if err != nil {
+		log.GVA_LOG.Error("SendGroupMessage error", zap.Error(err))
+	}
+	var WsApi WsConnection
+	WsApi.Send(websocket.BinaryMessage, msgData)
 }

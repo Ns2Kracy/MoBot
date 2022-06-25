@@ -94,28 +94,20 @@ func NewHttpRequest(method, url string, body, contentType interface{}) *http.Req
 	reqBody := bytes.NewBuffer([]byte(body.(string)))
 	if method == "POST" {
 		if contentType == config.JSON_Type {
-			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("Accept", "application/json")
+			req.Header.Set("Content-Type", config.JSON_Type)
+			req.Header.Set("Accept", config.JSON_Type)
 
 			req, err = http.NewRequest(method, url, reqBody)
 		} else if contentType == config.Form_Type {
-			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-			req.Header.Set("Accept", "application/x-www-form-urlencoded")
+			req.Header.Set("Content-Type", config.Form_Type)
+			req.Header.Set("Accept", config.Form_Type)
 
 			req, err = http.NewRequest(method, url, reqBody)
 		} else {
 			req, err = http.NewRequest(method, url, reqBody)
 		}
 	} else {
-		req, err = http.NewRequest(method, url, nil)
-	}
-	switch method {
-	case "POST":
-		break
-	case "GET":
-		break
-	default:
-		break
+		req, err = http.NewRequest(method, url, reqBody)
 	}
 	if err != nil {
 		log.GVA_LOG.Error("http.NewRequest", zap.Any("err", err))

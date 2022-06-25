@@ -3,7 +3,7 @@ zap:
   level: 'info'
   format: 'console'
   prefix: '[ns2kracy/mobot/log]'
-  director: 'logs'
+  director: 'log/logs'
   show-line: true
   encode-level: 'LowercaseColorLevelEncoder'
   stacktrace-key: 'stacktrace'
@@ -14,6 +14,7 @@ system:
   env: 'debug'  # Change to "develop" to skip authentication for development mode
   host: 'localhost'
   port: 5700
+
   db-type: 'mysql'
   use-redis: false     # 使用redis
   use-multipoint: false
@@ -35,13 +36,3 @@ mysql:
   max-open-conns: 100
   log-mode: "debug"
   log-zap: false
-
-setu:
-  app-id: 'wx8b8f8f8f8f8f8f8f'
-  r18: false
-  size: 'large'
-  image_path: './setu'
-
-# local configuration
-local:
-  path: 'uploads/file'
