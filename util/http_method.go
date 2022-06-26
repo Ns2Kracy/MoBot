@@ -1,7 +1,6 @@
 package util
 
 import (
-	"MoBot/config"
 	"MoBot/log"
 	"bytes"
 	"encoding/json"
@@ -85,32 +84,4 @@ func HttpPostForm(url string, body url.Values) *http.Response {
 func GetRspBody(rsp *http.Response) []byte {
 	body, _ := ioutil.ReadAll(rsp.Body)
 	return body
-}
-
-// 一个通用的请求方法, 并设定请求格式是json还是form, 如果不是post请求, 则不需要设定
-func NewHttpRequest(method, url string, body, contentType interface{}) *http.Request {
-	var req *http.Request
-	var err error
-	reqBody := bytes.NewBuffer([]byte(body.(string)))
-	if method == "POST" {
-		if contentType == config.JSON_Type {
-			req.Header.Set("Content-Type", config.JSON_Type)
-			req.Header.Set("Accept", config.JSON_Type)
-
-			req, err = http.NewRequest(method, url, reqBody)
-		} else if contentType == config.Form_Type {
-			req.Header.Set("Content-Type", config.Form_Type)
-			req.Header.Set("Accept", config.Form_Type)
-
-			req, err = http.NewRequest(method, url, reqBody)
-		} else {
-			req, err = http.NewRequest(method, url, reqBody)
-		}
-	} else {
-		req, err = http.NewRequest(method, url, reqBody)
-	}
-	if err != nil {
-		log.GVA_LOG.Error("http.NewRequest", zap.Any("err", err))
-	}
-	return req
 }

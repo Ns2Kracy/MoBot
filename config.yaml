@@ -11,17 +11,12 @@ zap:
 
 # system configuration
 system:
-  env: 'debug'  # Change to "develop" to skip authentication for development mode
-  host: 'localhost'
-  port: 5700
-
+  host: '127.0.0.1'
+  port: '6000'
+  ws_port: "5700"
   db-type: 'mysql'
   use-redis: false     # 使用redis
   use-multipoint: false
-  # IP限制次数 一个小时15000次
-  iplimit-count: 15000
-  #  IP限制一个小时
-  iplimit-time: 3600
 
 # mysql connect configuration
 mysql:

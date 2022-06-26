@@ -2,12 +2,12 @@ package main
 
 import (
 	"MoBot/config"
+	"MoBot/controller"
 	"MoBot/database"
 	"MoBot/log"
-	"MoBot/router"
-	"fmt"
 	"github.com/kataras/iris/v12"
 	"go.uber.org/zap"
+	"os"
 )
 
 func main() {
@@ -24,15 +24,12 @@ func main() {
 	}
 
 	//运行服务
-	newApp()
-}
-
-func newApp() *iris.Application {
+	controller.WsConnAll = make(map[int64]*controller.WsConnection)
 	app := iris.New()
-	router.InitRoute(app)
-	address := fmt.Sprintf(":%d", config.GVA_CONFIG.System.Port)
-	if err := app.Run(iris.Addr(address), iris.WithoutServerError(iris.ErrServerClosed)); err != nil {
+	app.Logger().SetLevel("debug")
+	app.Get("/", controller.WsHandler)
+	if err := app.Run(iris.Addr(":"+config.GVA_CONFIG.System.WsPort), iris.WithoutServerError(iris.ErrServerClosed)); err != nil {
 		log.GVA_LOG.Error("run server failed", zap.Error(err))
+		os.Exit(1)
 	}
-	return app
 }

@@ -1,28 +1,11 @@
 package model
 
-// 支持onebot标准的消息格式
-type Message struct {
-	PrivateParams
-	GroupParams
-	Action string `json:"action"`
-	Echo   string `json:"echo"`
-}
-
-type PrivateParams struct {
-	UserId  int64       `json:"user_id"`
-	Message interface{} `json:"message"`
-}
-type GroupParams struct {
-	GroupId int64       `json:"group_id"`
-	Message interface{} `json:"message"`
-}
-
 type GroupMessage struct {
 	Action string `json:"action"`
 	Params struct {
 		GroupId int64       `json:"group_id"`
 		Message interface{} `json:"message"`
-	}
+	} `json:"params"`
 }
 
 type PrivateMessage struct {
@@ -30,7 +13,7 @@ type PrivateMessage struct {
 	Params struct {
 		UserId  int64       `json:"user_id"`
 		Message interface{} `json:"message"`
-	}
+	} `json:"params"`
 }
 
 type CqMsg struct {

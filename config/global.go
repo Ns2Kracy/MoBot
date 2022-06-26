@@ -18,3 +18,6 @@ const (
 	Form_Type = "application/x-www-form-urlencoded"
 	JSON_Type = "application/json"
 )
+
+// 请求地址
+var Http_Url = "http://127.0.0.1:6000"

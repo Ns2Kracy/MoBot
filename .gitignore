@@ -2,3 +2,4 @@
 gocqhttp
 log/logs
 .gitignore
+config.yaml
